@@ -1,0 +1,84 @@
+name: address_space
+
+topology:
+  nodes:
+    leaf1:
+      kind: linux
+      image: quay.io/frrouting/frr:10.2.1
+      binds:
+        - leaf1/daemons:/etc/frr/daemons
+        - leaf1/frr.conf:/etc/frr/frr.conf
+        - leaf1/vtysh.conf:/etc/frr/vtysh.conf
+        - leaf1/setup.sh:/setup.sh
+    leaf2:
+      kind: linux
+      image: quay.io/frrouting/frr:10.2.1
+      binds:
+        - leaf2/daemons:/etc/frr/daemons
+        - leaf2/frr.conf:/etc/frr/frr.conf
+        - leaf2/vtysh.conf:/etc/frr/vtysh.conf
+        - leaf2/setup.sh:/setup.sh
+    leaf3:
+      kind: linux
+      image: quay.io/frrouting/frr:10.2.1
+      binds:
+        - leaf3/daemons:/etc/frr/daemons
+        - leaf3/frr.conf:/etc/frr/frr.conf
+        - leaf3/vtysh.conf:/etc/frr/vtysh.conf
+        - leaf3/setup.sh:/setup.sh
+    spine1:
+      kind: linux
+      image: quay.io/frrouting/frr:10.2.1
+      binds:
+        - spine1/daemons:/etc/frr/daemons
+        - spine1/frr.conf:/etc/frr/frr.conf
+        - spine1/vtysh.conf:/etc/frr/vtysh.conf
+        - spine1/setup.sh:/setup.sh
+    spine2:
+      kind: linux
+      image: quay.io/frrouting/frr:10.2.1
+      binds:
+        - spine2/daemons:/etc/frr/daemons
+        - spine2/frr.conf:/etc/frr/frr.conf
+        - spine2/vtysh.conf:/etc/frr/vtysh.conf
+        - spine2/setup.sh:/setup.sh
+
+    HOST1:
+      kind: linux
+      image: praqma/network-multitool:latest
+      binds:
+        - host1/setup.sh:/setup.sh
+      cmd: bash /setup.sh
+
+    HOST2:
+      kind: linux
+      image: praqma/network-multitool:latest
+      binds:
+        - host2/setup.sh:/setup.sh
+      cmd: bash /setup.sh
+
+    HOST3:
+      kind: linux
+      image: praqma/network-multitool:latest
+      binds:
+        - host3/setup.sh:/setup.sh
+      cmd: bash /setup.sh
+
+    HOST4:
+      kind: linux
+      image: praqma/network-multitool:latest
+      binds:
+        - host4/setup.sh:/setup.sh
+      cmd: bash /setup.sh
+
+  links:
+    - endpoints: ["leaf1:eth1", "spine1:eth1"]
+    - endpoints: ["leaf2:eth1", "spine1:eth2"]
+    - endpoints: ["leaf3:eth1", "spine1:eth3"]
+    - endpoints: ["leaf1:eth2", "spine2:eth1"]
+    - endpoints: ["leaf2:eth2", "spine2:eth2"]
+    - endpoints: ["leaf3:eth2", "spine2:eth3"]
+    - endpoints: ["HOST1:eth1", "leaf1:eth3"]
+    - endpoints: ["HOST2:eth1", "leaf2:eth3"]
+    - endpoints: ["HOST3:eth1", "leaf3:eth3"]
+    - endpoints: ["HOST4:eth1", "leaf3:eth4"]

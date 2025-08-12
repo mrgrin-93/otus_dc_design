@@ -1,1 +1,4 @@
-# otus_dc_design
+# Network Engineer
+Лабораторные работы OTUS "Дизайн сетей ЦОД".
+
+ - [Практические работы](labs/)
