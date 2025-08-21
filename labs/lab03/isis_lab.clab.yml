@@ -1,0 +1,66 @@
+name: isis_lab
+
+topology:
+  groups:
+    super_spines:
+      kind: linux
+      image: quay.io/frrouting/frr:10.2.1
+      binds:
+        - __clabDir__/defaults/daemons:/etc/frr/daemons
+        - __clabDir__/defaults/vtysh.conf:/etc/frr/vtysh.conf
+        - __clabNodeDir__/frr.conf:/etc/frr/frr.conf
+        - __clabNodeDir__/setup.sh:/setup.sh
+    spines:
+      kind: linux
+      image: quay.io/frrouting/frr:10.2.1
+      binds:
+        - __clabDir__/defaults/daemons:/etc/frr/daemons
+        - __clabDir__/defaults/vtysh.conf:/etc/frr/vtysh.conf
+        - __clabNodeDir__/frr.conf:/etc/frr/frr.conf
+        - __clabNodeDir__/setup.sh:/setup.sh
+    leafs:
+      kind: linux
+      image: quay.io/frrouting/frr:10.2.1
+      binds:
+        - __clabDir__/defaults/daemons:/etc/frr/daemons
+        - __clabDir__/defaults/vtysh.conf:/etc/frr/vtysh.conf
+        - __clabNodeDir__/frr.conf:/etc/frr/frr.conf
+        - __clabNodeDir__/setup.sh:/setup.sh
+
+  nodes:
+    leaf1-1:
+      group: leafs
+    # leaf1-2:
+    #   group: leafs
+    # leaf1-3:
+    #   group: leafs
+    spine1-1:
+      group: spines
+    # spine1-2:
+    #   group: spines
+    # leaf2-1:
+    #   group: leafs
+    # leaf2-2:
+    #   group: leafs
+    # spine2-1:
+    #   group: spines
+    ss1:
+      group: super_spines
+    # ss2:
+    #   group: super_spines
+
+  links:
+    - endpoints: ["leaf1-1:eth1", "spine1-1:eth1"]
+    # - endpoints: ["leaf1-2:eth1", "spine1-1:eth2"]
+    # - endpoints: ["leaf1-3:eth1", "spine1-1:eth3"]
+    # - endpoints: ["leaf1-1:eth2", "spine1-2:eth1"]
+    # - endpoints: ["leaf1-2:eth2", "spine1-2:eth2"]
+    # - endpoints: ["leaf1-3:eth2", "spine1-2:eth3"]
+    # - endpoints: ["leaf2-1:eth1", "spine2-1:eth1"]
+    # - endpoints: ["leaf2-2:eth1", "spine2-1:eth2"]
+    - endpoints: ["spine1-1:eth4", "ss1:eth1"]
+    # - endpoints: ["spine1-2:eth4", "ss1:eth2"]
+    # - endpoints: ["spine2-1:eth3", "ss1:eth3"]
+    # - endpoints: ["spine1-1:eth5", "ss2:eth1"]
+    # - endpoints: ["spine1-2:eth5", "ss2:eth2"]
+    # - endpoints: ["spine2-1:eth4", "ss2:eth3"]
