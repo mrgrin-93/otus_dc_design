@@ -1,0 +1,35 @@
+name: bgp_lab
+
+topology:
+  kinds:
+    arista_ceos:
+      image: localhost/ceos:4.34.2f
+      binds:
+        - __clabDir__/mymapping.json:/mnt/flash/EosIntfMapping.json:ro
+  groups:
+    super_spines:
+      kind: arista_ceos
+    spines:
+      kind: arista_ceos
+    leafs:
+      kind: arista_ceos
+
+  nodes:
+    leaf1-1:
+      group: leafs
+    leaf1-2:
+      group: leafs
+    leaf1-3:
+      group: leafs
+    spine1-1:
+      group: spines
+    spine1-2:
+      group: spines
+
+  links:
+    - endpoints: ["leaf1-1:eth1", "spine1-1:eth1"]
+    - endpoints: ["leaf1-2:eth1", "spine1-1:eth2"]
+    - endpoints: ["leaf1-3:eth1", "spine1-1:eth3"]
+    - endpoints: ["leaf1-1:eth2", "spine1-2:eth1"]
+    - endpoints: ["leaf1-2:eth2", "spine1-2:eth2"]
+    - endpoints: ["leaf1-3:eth2", "spine1-2:eth3"]

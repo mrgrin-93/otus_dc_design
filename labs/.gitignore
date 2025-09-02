@@ -3,3 +3,15 @@ ansible*
 authorized*
 nornir*
 topology*
+.*
+persist
+schedule
+Fossil
+aboot
+Asu*
+Eos*
+*.log
+boot*
+debug
+*.backup
+tpm*
