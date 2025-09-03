@@ -3,7 +3,7 @@ name: bgp_lab
 topology:
   kinds:
     arista_ceos:
-      image: localhost/ceos:4.34.2f
+      image: ceos:4.34.2f
       binds:
         - __clabDir__/mymapping.json:/mnt/flash/EosIntfMapping.json:ro
   groups:
