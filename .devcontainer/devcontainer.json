@@ -1,8 +1,35 @@
 {
-    "image": "ghcr.io/srl-labs/containerlab/devcontainer-dind-slim:0.68.0",
-    "hostRequirements": {
-        "cpus": 4, 
-        "memory": "16gb",
-        "storage": "32gb"
+  "name": "Containerlab ACLABS Environment",
+  "image": "ghcr.io/aristanetworks/aclabs/lab-base:python3.11-avd-v5.3.0-clab0.67.0-rev1.5",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+      "moby": true
     }
+  },
+  "runArgs": ["--privileged"],
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash"
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.profiles.linux": {
+          "bash": {
+            "path": "/bin/bash",
+            "icon": "terminal-bash"
+          }
+        },
+        "terminal.integrated.defaultProfile.linux": "bash"
+      },
+      "extensions": [
+        "srl-labs.vscode-containerlab"
+      ]
+    }
+  },
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "16gb",
+    "storage": "32gb"
+  }
 }
