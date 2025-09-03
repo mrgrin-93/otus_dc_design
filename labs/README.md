@@ -14,18 +14,16 @@
 
 Для запуска лабораторных работ можно использовать Codespace. [Тык](https://codespaces.new/mrgrin-93/otus_dc_design?quickstart=1)
 
-::: tip
- - Без образа (lab04) работать не будет, поэтому сначала нужно скачать образ на сайте [arista](https://www.arista.com/en/support/software-download), а затем перетащить его в Codespace (Простым drag&drop).
- - После этого выполнить в териминале
-```
-docker import '/workspaces/otus_dc_design/cEOS-lab-4.34.2F.tar.xz' ceos:4.34.2f
-```
-:::
+> [!TIP]
+> Без образа (lab04) работать не будет, поэтому сначала нужно скачать образ на сайте [arista](https://www.arista.com/en/support/software-download), а затем перетащить его в Codespace (Простым drag&drop).
+> После этого выполнить в териминале
+> ```
+> docker import '/workspaces/otus_dc_design/cEOS-lab-4.34.2F.tar.xz' ceos:4.34.2f
+> ```
 
-::: warning
-В образе используется старый clab, поэтому первым делом в консоли запустите
-
-```
-sudo clab version upgrade
-```
-:::
+> [!WARNING]
+> В образе используется старый clab, поэтому первым делом в консоли запустите
+>
+> ```
+> sudo clab version upgrade
+> ```
