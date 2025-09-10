@@ -1,0 +1,53 @@
+name: evpn_l2_lab
+
+topology:
+  kinds:
+    arista_ceos:
+      image: localhost/ceos:4.34.2f
+      binds:
+        - __clabDir__/mymapping.json:/mnt/flash/EosIntfMapping.json:ro
+  groups:
+    spines:
+      kind: arista_ceos
+    leafs:
+      kind: arista_ceos
+    hosts:
+      kind: linux
+      image: praqma/network-multitool:latest
+      binds:
+        - __clabNodeDir__/setup.sh:/setup.sh
+      cmd: bash /setup.sh
+
+  nodes:
+    leaf1-1:
+      group: leafs
+    leaf1-2:
+      group: leafs
+    leaf1-3:
+      group: leafs
+
+    spine1-1:
+      group: spines
+    spine1-2:
+      group: spines
+
+    host1-1:
+      group: hosts
+    host3-2:
+      group: hosts
+    host2-1:
+      group: hosts
+    host2-2:
+      group: hosts
+
+  links:
+    - endpoints: ["leaf1-1:eth1", "spine1-1:eth1"]
+    - endpoints: ["leaf1-2:eth1", "spine1-1:eth2"]
+    - endpoints: ["leaf1-3:eth1", "spine1-1:eth3"]
+    - endpoints: ["leaf1-1:eth2", "spine1-2:eth1"]
+    - endpoints: ["leaf1-2:eth2", "spine1-2:eth2"]
+    - endpoints: ["leaf1-3:eth2", "spine1-2:eth3"]
+    - endpoints: ["leaf1-1:eth3", "host1-1:eth1"]
+    - endpoints: ["leaf1-2:eth3", "host2-1:eth1"]
+    - endpoints: ["leaf1-2:eth4", "host2-2:eth1"]
+    - endpoints: ["leaf1-3:eth3", "host3-2:eth1"]
