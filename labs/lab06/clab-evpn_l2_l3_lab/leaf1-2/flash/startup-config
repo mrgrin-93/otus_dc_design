@@ -1,4 +1,4 @@
-! Startup-config last modified at Thu Sep 11 16:14:09 2025 by root
+! Startup-config last modified at Thu Sep 11 19:43:37 2025 by root
 ! device: leaf1-2 (cEOSLab, EOS-4.34.2F-43232954.4342F (engineering build))
 !
 no aaa root
@@ -23,6 +23,8 @@ system l1
    unsupported error-correction action error
 !
 vlan 10,20
+!
+vrf instance SEC1
 !
 management api gnmi
    transport grpc default
@@ -49,16 +51,28 @@ interface Loopback0
    ipv6 address fd01::1:2/128
 !
 interface Management1
-   ip address 172.20.20.4/24
-   ipv6 address 3fff:172:20:20::4/64
+   ip address 172.20.20.6/24
+   ipv6 address 3fff:172:20:20::6/64
+!
+interface Vlan10
+   vrf SEC1
+   ip address virtual 172.16.1.1/24
+!
+interface Vlan20
+   vrf SEC1
+   ip address virtual 172.16.2.1/24
 !
 interface Vxlan1
    vxlan source-interface Loopback0
    vxlan udp-port 4789
    vxlan vlan 10 vni 10010
    vxlan vlan 20 vni 10020
+   vxlan vrf SEC1 vni 999
+!
+ip virtual-router mac-address c0:01:ca:fe:ba:be
 !
 ip routing ipv6 interfaces 
+ip routing vrf SEC1
 !
 ipv6 unicast-routing
 !
@@ -93,6 +107,12 @@ router bgp 65102
    address-family ipv6
       neighbor BGP activate
       network fd01::1:2/128
+   !
+   vrf SEC1
+      rd 65010:999
+      route-target import evpn 65010:999
+      route-target export evpn 65010:999
+      redistribute connected
 !
 router multicast
    ipv4

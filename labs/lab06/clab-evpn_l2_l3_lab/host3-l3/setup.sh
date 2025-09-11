@@ -2,7 +2,7 @@
 #
 
 sleep 3
-ip addr add 172.16.255.2/31 dev eth1
+ip addr add 172.16.255.0/31 dev eth1
 
 
 # set the default gw via eth1
