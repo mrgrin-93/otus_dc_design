@@ -1,4 +1,4 @@
-! Startup-config last modified at Thu Sep 11 19:43:37 2025 by root
+! Startup-config last modified at Sat Sep 13 16:39:09 2025 by root
 ! device: leaf1-2 (cEOSLab, EOS-4.34.2F-43232954.4342F (engineering build))
 !
 no aaa root
@@ -109,10 +109,9 @@ router bgp 65102
       network fd01::1:2/128
    !
    vrf SEC1
-      rd 65010:999
+      rd 192.168.11.2:999
       route-target import evpn 65010:999
       route-target export evpn 65010:999
-      redistribute connected
 !
 router multicast
    ipv4

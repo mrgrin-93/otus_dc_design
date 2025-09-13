@@ -1,4 +1,4 @@
-! Startup-config last modified at Thu Sep 11 19:43:37 2025 by root
+! Startup-config last modified at Sat Sep 13 16:39:11 2025 by root
 ! device: leaf1-1 (cEOSLab, EOS-4.34.2F-43232954.4342F (engineering build))
 !
 no aaa root
@@ -52,8 +52,8 @@ interface Loopback0
    ipv6 address fd01::1:1/128
 !
 interface Management1
-   ip address 172.20.20.2/24
-   ipv6 address 3fff:172:20:20::2/64
+   ip address 172.20.20.3/24
+   ipv6 address 3fff:172:20:20::3/64
 !
 interface Vlan10
    vrf SEC1
@@ -100,10 +100,9 @@ router bgp 65101
       network fd01::1:1/128
    !
    vrf SEC1
-      rd 65010:999
+      rd 192.168.11.1:999
       route-target import evpn 65010:999
       route-target export evpn 65010:999
-      redistribute connected
 !
 router multicast
    ipv4
