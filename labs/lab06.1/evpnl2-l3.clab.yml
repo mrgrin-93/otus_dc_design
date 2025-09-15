@@ -1,0 +1,56 @@
+name: evpnl2-l3
+
+topology:
+  groups:
+    hosts:
+      kind: linux
+      image: praqma/network-multitool:latest
+      binds:
+        - __clabNodeDir__/setup.sh:/setup.sh
+      cmd: bash /setup.sh
+    leafs:
+      kind: linux
+      image: quay.io/frrouting/frr:10.2.1
+      binds:
+        - __clabNodeDir__/daemons:/etc/frr/daemons
+        - __clabNodeDir__/frr.conf:/etc/frr/frr.conf
+        - __clabNodeDir__/vtysh.conf:/etc/frr/vtysh.conf
+        - __clabNodeDir__/setup.sh:/setup.sh
+    spines:
+      kind: linux
+      image: quay.io/frrouting/frr:10.2.1
+      binds:
+        - __clabNodeDir__/daemons:/etc/frr/daemons
+        - __clabNodeDir__/frr.conf:/etc/frr/frr.conf
+        - __clabNodeDir__/vtysh.conf:/etc/frr/vtysh.conf
+        - __clabNodeDir__/setup.sh:/setup.sh
+
+  nodes:
+    leaf1:
+      group: leafs
+
+    leaf2:
+      group: leafs
+
+    spine:
+      group: spines
+
+    host_lan1_1:
+      group: hosts
+
+    host_lan1_2:
+      group: hosts
+
+    host_lan2_1:
+      group: hosts
+
+    host_lan2_2:
+      group: hosts
+
+  links:
+    - endpoints: ["leaf1:eth1", "spine:eth1"]
+    - endpoints: ["leaf2:eth1", "spine:eth2"]
+    - endpoints: ["host_lan1_1:eth1", "leaf1:eth2"]
+    - endpoints: ["host_lan2_1:eth1", "leaf1:eth3"]
+    - endpoints: ["host_lan1_2:eth1", "leaf2:eth2"]
+    - endpoints: ["host_lan2_2:eth1", "leaf2:eth3"]

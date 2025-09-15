@@ -1,4 +1,4 @@
-! Startup-config last modified at Sat Sep 13 16:39:11 2025 by root
+! Startup-config last modified at Mon Sep 15 20:11:48 2025 by root
 ! device: leaf1-1 (cEOSLab, EOS-4.34.2F-43232954.4342F (engineering build))
 !
 no aaa root
@@ -79,7 +79,13 @@ router bgp 65101
    maximum-paths 4 ecmp 4
    neighbor BGP peer group
    neighbor BGP bfd
-   neighbor BGP send-community extended
+   neighbor OVERLAY peer group
+   neighbor OVERLAY remote-as 65010
+   neighbor OVERLAY update-source Loopback0
+   neighbor OVERLAY ebgp-multihop 5
+   neighbor OVERLAY send-community extended
+   neighbor 192.168.12.1 peer group OVERLAY
+   neighbor 192.168.12.2 peer group OVERLAY
    neighbor interface Et1/1-2 peer-group BGP remote-as 65010
    !
    vlan 10
@@ -88,7 +94,7 @@ router bgp 65101
       redistribute learned
    !
    address-family evpn
-      neighbor BGP activate
+      neighbor OVERLAY activate
    !
    address-family ipv4
       neighbor BGP activate

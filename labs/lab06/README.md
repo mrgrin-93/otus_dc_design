@@ -110,3 +110,16 @@ PING 172.16.1.2 (172.16.1.2) 56(84) bytes of data.
 64 bytes from 172.16.1.2: icmp_seq=6 ttl=62 time=2.46 ms
 
 ```
+
+
+### Дамп
+Снимается командой (слушать сразу оба интерфейса к спайну)
+```
+sudo ip netns exec clab-evpn_l2_l3_lab-leaf1-2 tcpdump -nni eth1 -nni eth2  -w - | wireshark -k -i -
+```
+
+И запускаем пинг с хоста 1-1 к хосту 2-2
+
+![Дамп](dump_l3.png)
+
+На дампе видно что vni = 999
