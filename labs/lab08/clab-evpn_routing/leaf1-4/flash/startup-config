@@ -1,0 +1,157 @@
+! Startup-config last modified at Wed Sep 24 18:20:34 2025 by root
+! device: leaf1-4 (cEOSLab, EOS-4.34.2F-43232954.4342F (engineering build))
+!
+no aaa root
+!
+username admin privilege 15 role network-admin secret sha512 $6$mCMHvCen9BBCFAzp$vnM3AFEhe5udSRAmYzuNojoh5jwCrSH2LA9S07m/YmIC/TaMOpQEVQ59yYHXPW7tVKuw3w7W8EG48k4ofhU/9.
+!
+management api http-commands
+   no shutdown
+!
+no service interface inactive port-id allocation disabled
+!
+transceiver qsfp default-mode 4x10G
+!
+service routing protocols model multi-agent
+!
+hostname leaf1-4
+!
+spanning-tree mode mstp
+!
+system l1
+   unsupported speed action error
+   unsupported error-correction action error
+!
+vlan 20
+!
+vrf instance SEC1
+!
+vrf instance SEC2
+!
+management api gnmi
+   transport grpc default
+!
+management api netconf
+   transport ssh default
+!
+interface Port-Channel20
+   description Link_to_Client
+   switchport access vlan 20
+   !
+   evpn ethernet-segment
+      identifier 0000:0000:0000:0000:0001
+      designated-forwarder election algorithm preference 90
+      route-target import 00:00:00:00:00:01
+   lacp system-id 02aa.aaaa.0001
+!
+interface Ethernet1/1
+   no switchport
+   ipv6 enable
+!
+interface Ethernet1/2
+   no switchport
+   ipv6 enable
+!
+interface Ethernet1/3
+   channel-group 20 mode active
+!
+interface Ethernet1/4
+   no switchport
+   vrf SEC1
+   ip address 10.1.0.0/31
+   ipv6 enable
+!
+interface Ethernet1/5
+   no switchport
+   vrf SEC2
+   ip address 10.2.0.0/31
+   ipv6 enable
+!
+interface Loopback0
+   ip address 192.168.11.4/32
+   ipv6 address fd01::1:4/128
+!
+interface Management1
+   ip address 172.20.20.5/24
+   ipv6 address 3fff:172:20:20::7/64
+!
+interface Vlan20
+   vrf SEC1
+   ip address virtual 172.16.2.1/24
+!
+interface Vxlan1
+   vxlan source-interface Loopback0
+   vxlan udp-port 4789
+   vxlan vlan 20 vni 10020
+   vxlan vrf SEC1 vni 999
+   vxlan vrf SEC2 vni 1000
+!
+ip routing ipv6 interfaces 
+ip routing ipv6 interfaces  vrf SEC1
+ip routing ipv6 interfaces  vrf SEC2
+!
+ipv6 unicast-routing
+ipv6 unicast-routing vrf SEC1
+ipv6 unicast-routing vrf SEC2
+!
+router bgp 65104
+   router-id 192.168.11.4
+   no bgp default ipv4-unicast
+   timers bgp 3 9
+   maximum-paths 4 ecmp 4
+   neighbor BGP peer group
+   neighbor BGP bfd
+   neighbor OVERLAY peer group
+   neighbor OVERLAY remote-as 65010
+   neighbor OVERLAY update-source Loopback0
+   neighbor OVERLAY ebgp-multihop 5
+   neighbor OVERLAY send-community extended
+   neighbor 192.168.12.1 peer group OVERLAY
+   neighbor 192.168.12.2 peer group OVERLAY
+   neighbor interface Et1/1-2 peer-group BGP remote-as 65010
+   !
+   vlan 20
+      rd auto
+      route-target both 65010:10020
+      redistribute learned
+   !
+   address-family evpn
+      neighbor OVERLAY activate
+   !
+   address-family ipv4
+      neighbor BGP activate
+      neighbor BGP next-hop address-family ipv6 originate
+      network 192.168.11.4/32
+   !
+   address-family ipv6
+      neighbor BGP activate
+      network fd01::1:4/128
+   !
+   vrf SEC1
+      rd 192.168.11.4:999
+      route-target import evpn 65010:999
+      route-target export evpn 65010:999
+      neighbor 10.1.0.1 remote-as 65500
+      redistribute connected
+      !
+      address-family ipv4
+         neighbor 10.1.0.1 activate
+   !
+   vrf SEC2
+      rd 192.168.11.4:1000
+      route-target import evpn 65010:1000
+      route-target export evpn 65010:1000
+      neighbor 10.2.0.1 remote-as 65500
+      redistribute connected
+      !
+      address-family ipv4
+         neighbor 10.2.0.1 activate
+!
+router multicast
+   ipv4
+      software-forwarding kernel
+   !
+   ipv6
+      software-forwarding kernel
+!
+end

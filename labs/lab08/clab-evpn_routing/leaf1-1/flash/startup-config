@@ -1,0 +1,187 @@
+! Startup-config last modified at Wed Sep 24 18:20:34 2025 by root
+! device: leaf1-1 (cEOSLab, EOS-4.34.2F-43232954.4342F (engineering build))
+!
+no aaa root
+!
+username admin privilege 15 role network-admin secret sha512 $6$qDZXw4s8ACI3LqDO$E8Ngh/gGcB1tvaFSJNSrnH7W7kI.ATPQsemU5UW5TiNG7j4fhAN1GKsTcQr8xOFOkL7UXwSV44EvR1AHPR5Fv/
+!
+management api http-commands
+   no shutdown
+!
+errdisable recovery cause uplink-failure-detection
+!
+no service interface inactive port-id allocation disabled
+!
+transceiver qsfp default-mode 4x10G
+!
+service routing protocols model multi-agent
+!
+hostname leaf1-1
+!
+spanning-tree mode mstp
+no spanning-tree vlan-id 4090
+!
+system l1
+   unsupported speed action error
+   unsupported error-correction action error
+!
+vlan 10,30
+!
+vlan 4090
+   name mlag-peer
+   trunk group mlag-peer
+!
+vrf instance SEC1
+!
+vrf instance SEC2
+!
+management api gnmi
+   transport grpc default
+!
+management api netconf
+   transport ssh default
+!
+interface Port-Channel10
+   switchport access vlan 10
+   mlag 10
+!
+interface Port-Channel30
+   switchport access vlan 30
+   mlag 30
+!
+interface Port-Channel999
+   description MLAG Peer
+   switchport mode trunk
+   switchport trunk group mlag-peer
+   spanning-tree link-type point-to-point
+!
+interface Ethernet1/1
+   no switchport
+   ipv6 enable
+!
+interface Ethernet1/2
+   no switchport
+   ipv6 enable
+!
+interface Ethernet1/3
+   channel-group 10 mode active
+!
+interface Ethernet1/4
+   channel-group 30 mode active
+!
+interface Ethernet1/5
+   description mlag peer link
+   channel-group 999 mode active
+!
+interface Loopback0
+   ip address 192.168.11.1/32
+   ipv6 address fd01::1:1/128
+!
+interface Loopback1
+   description VXLAN-VTEP
+   ip address 192.168.11.11/32
+!
+interface Management1
+   ip address 172.20.20.100/24
+   ipv6 address 3fff:172:20:20::2/64
+!
+interface Vlan10
+   vrf SEC1
+   ip address virtual 172.16.1.1/24
+!
+interface Vlan30
+   vrf SEC2
+   ip address virtual 172.17.1.1/24
+!
+interface Vlan4090
+   no autostate
+   ip address 10.0.199.254/31
+!
+interface Vxlan1
+   vxlan source-interface Loopback1
+   vxlan udp-port 4789
+   vxlan vlan 10 vni 10010
+   vxlan vlan 30 vni 10030
+   vxlan vrf SEC1 vni 999
+   vxlan vrf SEC2 vni 1000
+!
+ip virtual-router mac-address c0:01:ca:fe:ba:be
+!
+ip routing ipv6 interfaces 
+ip routing vrf SEC1
+ip routing vrf SEC2
+!
+ipv6 unicast-routing
+!
+mlag configuration
+   domain-id leafs
+   local-interface Vlan4090
+   peer-address 10.0.199.255
+   peer-address heartbeat 172.20.20.101
+   peer-link Port-Channel999
+   dual-primary detection delay 10 action errdisable all-interfaces
+!
+router bgp 65101
+   router-id 192.168.11.1
+   no bgp default ipv4-unicast
+   timers bgp 3 9
+   maximum-paths 4 ecmp 4
+   neighbor BGP peer group
+   neighbor BGP bfd
+   neighbor OVERLAY peer group
+   neighbor OVERLAY remote-as 65010
+   neighbor OVERLAY update-source Loopback0
+   neighbor OVERLAY ebgp-multihop 5
+   neighbor OVERLAY send-community extended
+   neighbor UNDERLAY-MLAG peer group
+   neighbor UNDERLAY-MLAG remote-as 65101
+   neighbor UNDERLAY-MLAG next-hop-self
+   neighbor 10.0.199.255 peer group UNDERLAY-MLAG
+   neighbor 192.168.12.1 peer group OVERLAY
+   neighbor 192.168.12.2 peer group OVERLAY
+   neighbor interface Et1/1-2 peer-group BGP remote-as 65010
+   !
+   vlan 10
+      rd auto
+      route-target both 65010:10010
+      redistribute learned
+   !
+   vlan 30
+      rd auto
+      route-target both 65010:10030
+      redistribute learned
+   !
+   address-family evpn
+      neighbor OVERLAY activate
+   !
+   address-family ipv4
+      neighbor BGP activate
+      neighbor BGP next-hop address-family ipv6 originate
+      neighbor UNDERLAY-MLAG activate
+      network 192.168.11.1/32
+      network 192.168.11.11/32
+   !
+   address-family ipv6
+      neighbor BGP activate
+      network fd01::1:1/128
+   !
+   vrf SEC1
+      rd 192.168.11.1:999
+      route-target import evpn 65010:999
+      route-target export evpn 65010:999
+      redistribute connected
+   !
+   vrf SEC2
+      rd 192.168.11.1:1000
+      route-target import evpn 65010:1000
+      route-target export evpn 65010:1000
+      redistribute connected
+!
+router multicast
+   ipv4
+      software-forwarding kernel
+   !
+   ipv6
+      software-forwarding kernel
+!
+end
