@@ -1,0 +1,39 @@
+---
+provider: clab # все лабы будут выполяться в clab
+defaults:
+  device: frr
+  # дальше будут примеры и на arista (не забудте скачать образ)
+  # следующий параметр нужен, если хотите поменять дефолтную версию контейнера
+  # дефолтные и полностью подднрживаемые можно посмотреть коммандой netlab show images
+  # devices.eos.clab.image: localhost/ceos:4.34.2f
+
+addressing:
+  lo0_leafs_dc1: # dc1 это громко, так как в проекте будет всего один ЦОД
+    ipv4: 192.168.1.0/24
+    prefix: 32
+  lo0_spines_dc1:
+    ipv4: 192.168.11.0/24
+    prefix: 32
+  p2p_ll: # если захочется сделать ipv6 only или rfc 8950
+    ipv6: True
+
+nodes:
+  s1:
+    loopback:
+      pool: lo0_spines_dc1
+  l1:
+    loopback:
+      pool: lo0_leafs_dc1
+  l2:
+    loopback:
+      pool: lo0_leafs_dc1
+
+links:
+  - s1:
+    l1:
+    type: p2p
+    pool: p2p_ll
+  - s1:
+    l2:
+    type: p2p
+    pool: p2p
