@@ -100,3 +100,5 @@ links:
     area: 0.0.0.1
     passive: True
 ```
+
+И также есть отдельный [плагин](https://netlab.tools/plugins/ospf.areas/) для управления типами зон
