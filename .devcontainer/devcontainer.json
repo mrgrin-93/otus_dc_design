@@ -1,10 +1,7 @@
 {
   "image": "ghcr.io/ipspace/netlab/devcontainer:latest",
-  "customizations": {
-    "vscode": {
-      "extensions": ["srl-labs.vscode-containerlab"]
-    }
-  },
+
+  "extensions": ["srl-labs.vscode-containerlab"],
   "hostRequirements": {
     "cpus": 4,
     "memory": "16gb",
