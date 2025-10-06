@@ -53,3 +53,50 @@ interface Loopback0
 
 ```
 
+Тут сразу не хватает авторизации и bfd.  Давайте это исправим:
+
+```yaml
+module: [ospf, bfd]
+
+ospf:
+  bfd:
+    ipv4: True
+  password: ospfpass
+```
+
+Перезапустим лабу
+
+> netlab restart
+
+И посмотрим конфиг снова:
+
+```
+interface Ethernet1
+   description S1 -> L1
+   mac-address 52:dc:ca:fe:04:01
+   no switchport
+   ip address 10.1.0.2/30
+   bfd interval 500 min_rx 500 multiplier 3
+   ip ospf neighbor bfd
+   ip ospf network point-to-point
+   ip ospf authentication
+   ip ospf authentication-key 7 s28hXI3UjcXqd8QDXx22aQ==
+   ip ospf area 0.0.0.0
+```
+
+Посмотрим еще пару параметров, хоть в нашем случае они и не пригодятся.
+
+Можем переместить некоторые линки отдельную зону, а другие сделать passive:
+
+```yaml
+links:
+- S2:
+  L3:
+  ospf:
+    area: 0.0.0.1
+- L3:
+  type: stub
+    ospf:
+    area: 0.0.0.1
+    passive: True
+```
