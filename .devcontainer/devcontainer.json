@@ -1,30 +1,8 @@
 {
-  "name": "Containerlab ACLABS Environment",
-  "image": "ghcr.io/aristanetworks/aclabs/lab-base:python3.11-avd-v5.3.0-clab0.67.0-rev1.5",
-  "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {
-      "version": "latest",
-      "moby": true
-    }
-  },
-  "runArgs": ["--privileged"],
-  "settings": {
-    "terminal.integrated.shell.linux": "/bin/bash"
-  },
+  "image": "ghcr.io/ipspace/netlab/devcontainer:latest",
   "customizations": {
     "vscode": {
-      "settings": {
-        "terminal.integrated.profiles.linux": {
-          "bash": {
-            "path": "/bin/bash",
-            "icon": "terminal-bash"
-          }
-        },
-        "terminal.integrated.defaultProfile.linux": "bash"
-      },
-      "extensions": [
-        "srl-labs.vscode-containerlab"
-      ]
+      "extensions": ["srl-labs.vscode-containerlab"]
     }
   },
   "hostRequirements": {
