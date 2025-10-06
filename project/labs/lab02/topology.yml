@@ -1,0 +1,33 @@
+---
+provider: clab
+defaults:
+  device: eos
+  devices.eos.clab.image: localhost/ceos:4.34.2f
+
+addressing:
+  lo0_leafs_dc1:
+    ipv4: 192.168.1.0/24
+    prefix: 32
+  lo0_spines_dc1:
+    ipv4: 192.168.11.0/24
+    prefix: 32
+  p2p_ll:
+    ipv6: True
+
+plugin: [fabric]
+module: [ospf, bfd]
+
+ospf:
+  bfd:
+    ipv4: True
+  password: ospfpass
+
+fabric:
+  spines: 2
+  spine:
+    loopback:
+      pool: lo0_spines_dc1
+  leafs: 3
+  leaf:
+    loopback:
+      pool: lo0_leafs_dc1
