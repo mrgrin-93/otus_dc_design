@@ -1,0 +1,39 @@
+---
+provider: clab
+defaults:
+  device: eos
+  devices.eos.clab.image: localhost/ceos:4.34.2f
+
+addressing:
+  lo0_leafs_dc1:
+    ipv4: 192.168.1.0/24
+    prefix: 32
+  lo0_spines_dc1:
+    ipv4: 192.168.11.0/24
+    prefix: 32
+  p2p:
+    ipv6: True
+
+plugin: [fabric, bgp.session]
+module: [bgp, bfd]
+
+bgp.next_hop_self: false
+
+fabric:
+  spines: 2
+  spine:
+    loopback:
+      pool: lo0_spines_dc1
+    bgp:
+      as: 65100
+      next_hop_self: false
+    config: [templates/mp]
+
+  leafs: 3
+  leaf:
+    loopback:
+      pool: lo0_leafs_dc1
+    bgp:
+      as: "{65000 + count}"
+      next_hop_self: false
+    config: [templates/mp]
