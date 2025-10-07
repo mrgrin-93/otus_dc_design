@@ -70,3 +70,53 @@ vlans:
     vni: 1001 
     links: [L1-h1, L2-h2] # и подключим хосты аксесами к лифам
 ```
+
+#### L3VNI
+
+И добавим l3 связанность (symmetric irb):
+
+```yaml
+vrfs:
+  red:
+    evpn.transit_vni: 5042 # тут этого достаточно, но необходимо
+
+vlans:
+  red1:
+    mode: irb  # c svi, есть еще route, он для router on a stick
+    vrf: red
+    vni: 1001 
+    links: [L1-h1] 
+  red2:
+    mode: irb  # c svi, есть еще route, он для router on a stick
+    vrf: red
+    vni: 1002
+    links: [L2-h2] 
+```
+
+Теперь хосты из разных vlan могут общаться между собой.
+
+#### External connectivity
+
+Добавим дополнительные роутер, и соединим с L3 в каждом vrf
+
+```yaml
+nodes:
+  ext_rtr:
+    device: frr
+    module: [bgp]
+    bgp:
+      as: 65999
+      originate: "172.16.0.0/12"  # анонсируем summary 
+
+vrfs:
+  red:
+    evpn.transit_vni: 5042
+    # bgp: false                  # тут возникла проблема, о которой ниже
+    links: [ext_rtr-L3]
+  blue:
+    evpn.transit_vni: 5043
+    # bgp: false
+    links: [ext_rtr-L3]
+```
+
+При включеном bgp в vrf устанавливаются соседства между лифами по svi интерфейсам, а с выключеным не устанавливаются соседства с ext\_rtr. Решаемо с помощью netlab config, но не критично в лабораторных.
