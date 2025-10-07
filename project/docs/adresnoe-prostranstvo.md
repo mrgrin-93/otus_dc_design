@@ -44,7 +44,6 @@ links:
 - s1:
   l1:
   type: p2p
-  pool: p2p_ll
 - s1:
   l2:
   type: p2p

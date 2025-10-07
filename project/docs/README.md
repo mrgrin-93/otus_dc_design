@@ -14,3 +14,5 @@
 Все лабы можно запустить у меня в репозитории с помощью codespace. Каждой лабораторной соответствует своя директория в [projects/](https://app.gitbook.com/u/hfC51j1CsBbsSNGFeFjDjUf9O693).&#x20;
 
 Для запуска прямо отсюда жми [СЮДА](https://codespaces.new/mrgrin-93/otus_dc_design?quickstart=1)
+
+Советую установить расширение containerlab (с помощью devcontainer.json он так и не поставился)
