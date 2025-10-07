@@ -13,4 +13,4 @@
 
 ## Overlay
 
-* [L2VPN](overlay/l2vpn.md)
+* [EVPN](overlay/evpn.md)

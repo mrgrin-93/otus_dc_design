@@ -18,6 +18,7 @@ isis:
 
 Но вот беда, не завезли аутентификацию. Ну чтож, зато завезли функционал добавления своих конфигов централизовано, с помощью j2 шаблонов.
 
+{% code title="eos.j2" %}
 ```django
 {% for l in interfaces %}
 interface {{ l.ifname }}
@@ -26,6 +27,7 @@ interface {{ l.ifname }}
 {% endfor %}
 
 ```
+{% endcode %}
 
 > netlab config templates/
 
