@@ -1,7 +1,8 @@
 ---
 provider: clab
 defaults:
-  device: frr
+  device: eos
+  devices.eos.clab.image: localhost/ceos:4.34.2f
 
 plugin: [ebgp.multihop, fabric] # Use EBGP multihop plugin to get loopback EBGP sessions
 evpn.session: [] # Do not activate EVPN AF on any BGP session
