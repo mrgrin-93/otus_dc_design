@@ -15,12 +15,12 @@ bgp.multihop.sessions: # Add loopback-to-loopback EBGP multihop sessions
   - L1-S1
   - L2-S1
   - L3-S1
-  - L1-S2
-  - L2-S2
-  - L3-S2
+  # - L1-S2
+  # - L2-S2
+  # - L3-S2
 
 fabric:
-  spines: 2
+  spines: 1
   spine:
     module: [bgp, evpn]
     bgp:
