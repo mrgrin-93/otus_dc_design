@@ -1,0 +1,88 @@
+---
+provider: clab
+defaults:
+  device: frr
+
+plugin: [ebgp.multihop, fabric] # Use EBGP multihop plugin to get loopback EBGP sessions
+evpn.session: [] # Do not activate EVPN AF on any BGP session
+bgp.multihop.activate.ipv4: [evpn] # ... apart from the multihop sessions
+
+bgp.community.ebgp: [standard, extended] # Propagate extended community over EBGP
+bgp.sessions.ipv4: [ebgp] # ... and activate IPv4 AF only on EBGP sessions
+
+bgp.multihop.sessions: # Add loopback-to-loopback EBGP multihop sessions
+  - L1-S1
+  - L2-S1
+  - L3-S1
+  - L1-S2
+  - L2-S2
+  - L3-S2
+
+fabric:
+  spines: 2
+  spine:
+    module: [bgp, evpn]
+    bgp:
+      as: 65100
+      next_hop_self: false
+
+  leafs: 3
+  leaf:
+    module: [vlan, vxlan, bgp, evpn, vrf, gateway]
+    bgp:
+      as: "{65000 + count}"
+      next_hop_self: false
+
+nodes:
+  ext_rtr:
+    device: frr
+    module: [bgp]
+    bgp:
+      as: 65999
+      originate: "172.16.0.0/12"
+  h1:
+    device: linux
+  h2:
+    device: linux
+  h3:
+    device: linux
+  h4:
+    device: linux
+  h5:
+    device: linux
+
+vrfs:
+  red:
+    evpn.transit_vni: 5042
+    # bgp.
+    links: [ext_rtr-L3]
+  blue:
+    evpn.transit_vni: 5043
+    # bgp: false
+    links: [ext_rtr-L3]
+
+vlans:
+  red1:
+    vrf: red
+    mode: irb
+    gateway: True
+    vni: 1001
+    links: [L1-h1, L2-h2]
+  red2:
+    vrf: red
+    mode: irb
+    gateway: True
+    vni: 1002
+    links: [L2-h3]
+  blue1:
+    vrf: blue
+    mode: irb
+    gateway: True
+    vni: 2001
+    links: [L2-h4]
+  blue2:
+    vrf: blue
+    mode: irb
+    gateway: True
+    vni: 2002
+    links: [L3-h5]
