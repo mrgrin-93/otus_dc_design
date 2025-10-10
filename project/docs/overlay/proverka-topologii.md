@@ -82,23 +82,9 @@ netlab validete
     pass: int disabled
 
   session2:
-    description: Check the EBGP session on the ISP router
-    fail: The EBGP session with your router is not established
-    pass: The EBGP session is in the Established state
-    nodes: [ext_rtr, L1]
-    show:
-      frr: bgp summary json
-      eos: bgp summary | json
-
-    valid:
-      frr: >
-        {% for n in bgp.neighbors if n.name == 'L3' %}
-        result["ipv4Unicast"]["peers"]["{{ n.ipv4 }}"]["state"] == "Established"{% if not loop.last %} and {% endif %}
-        {% endfor %}
-      eos: >
-        {% for n in bgp.neighbors %}
-        result["vrfs"]["default"]["peers"]["{{ n.ipv4 }}"]["peerState"] == "Established"{% if not loop.last %} and {% endif %}
-        {% endfor %}
+    description: Check EBGP sessions with DUT
+    nodes: [L1, L2]
+    plugin: bgp_neighbor(node.bgp.neighbors,'S1')
 ```
 
 {% code title="template.j2" %}
@@ -126,11 +112,12 @@ shutdown
 [INFO]         Executing configuration snippet template
 [PASS]         int disabled
 
-[session2]     Check the EBGP session on the ISP router [ node(s): ext_rtr,L1 ]
-[PASS]         Validation succeeded on ext_rtr
-[FAIL]         Node L1: The EBGP session with your router is not established
+[session2]     Check EBGP sessions with DUT [ node(s): L1,L2 ]
+[FAIL]         Node L1: The neighbor 10.1.0.2 (S1) is in state Idle (expected Established)
+[PASS]         L2: Neighbor 10.1.0.6 (S1) is in state Established
 
 [FAIL]         7 tests completed, one test failed
+
 ```
 
 Сначала мы проверили пинг между хостами в разных вланах и vrf, затем проверили BGP сессии на L1 и ext\_rtr, затем отключили линк S1-L1 и снова проверили BGP. В итоге увидели  падение сессии.&#x20;
