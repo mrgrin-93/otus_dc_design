@@ -2,7 +2,7 @@
 provider: clab
 defaults:
   device: eos
-  devices.eos.clab.image: localhost/ceos:4.34.2f
+  devices.eos.clab.image: ceos:4.34.2f
 
 addressing:
   lo0_leafs_dc1:

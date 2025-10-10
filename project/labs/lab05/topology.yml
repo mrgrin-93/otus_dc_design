@@ -2,7 +2,7 @@
 provider: clab
 defaults:
   device: eos
-  devices.eos.clab.image: localhost/ceos:4.34.2f
+  devices.eos.clab.image: ceos:4.34.2f
 
 plugin: [ebgp.multihop, fabric] # Use EBGP multihop plugin to get loopback EBGP sessions
 evpn.session: [] # Do not activate EVPN AF on any BGP session
@@ -87,3 +87,43 @@ vlans:
     gateway: True
     vni: 2002
     links: [L3-h5]
+
+validate:
+  ping:
+    description: Pinging host from hosts
+    nodes: [h1, h3]
+    devices: [linux]
+    exec: ping -c 10 h5 -A
+    valid: |
+      "64 bytes" in stdout
+
+  session:
+    description: Check the EBGP session on the ISP router
+    fail: The EBGP session with your router is not established
+    pass: The EBGP session is in the Established state
+    nodes: [ext_rtr, L1, L2, L3]
+    show:
+      frr: bgp summary json
+      eos: bgp summary | json
+
+    valid:
+      frr: >
+        {% for n in bgp.neighbors if n.name == 'L3' %}
+        result["ipv4Unicast"]["peers"]["{{ n.ipv4 }}"]["state"] == "Established"{% if not loop.last %} and {% endif %}
+        {% endfor %}
+      eos: >
+        {% for n in bgp.neighbors %}
+        result["vrfs"]["default"]["peers"]["{{ n.ipv4 }}"]["peerState"] == "Established"{% if not loop.last %} and {% endif %}
+        {% endfor %}
+
+  disable_eth1:
+    description: Disable interface on L1
+    config:
+      template: template
+    nodes: [L1]
+    pass: int disabled
+
+  session2:
+    description: Check EBGP sessions with DUT
+    nodes: [L1, L2]
+    plugin: bgp_neighbor(node.bgp.neighbors,'S1')
