@@ -15,4 +15,4 @@
 
 * [EVPN](overlay/evpn.md)
 * [Проверка топологии](overlay/proverka-topologii.md)
-* [MСLAG](overlay/mslag.md)
+* [MLAG](overlay/mlag.md)
