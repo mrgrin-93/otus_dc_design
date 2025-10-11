@@ -1,0 +1,102 @@
+---
+provider: clab
+defaults:
+  device: eos
+  devices.eos.clab.image: ceos:4.34.2f
+
+plugin: [mlag.vtep, fabric] # Use EBGP multihop plugin to get loopback EBGP sessions
+
+bgp.as: 65000
+
+fabric:
+  spines: 1
+  spine:
+    module: [bgp, evpn, ospf]
+    config: [templates/mp]
+
+  leafs: 3
+  leaf:
+    module: [vlan, vxlan, ospf, bgp, evpn, vrf, gateway, lag]
+
+nodes:
+  h1:
+    device: linux
+    module: [lag]
+  h2:
+    device: linux
+
+links:
+  - lag:
+      members: [L1-L2]
+      mlag.peergroup: True
+  - vlan.access: red1
+    lag:
+      members: [L1-h1, L2-h1]
+
+vrfs:
+  red:
+    evpn.transit_vni: 5042
+
+vlans:
+  red1:
+    vrf: red
+    mode: irb
+    gateway: True
+    vni: 1001
+  red2:
+    vrf: red
+    mode: irb
+    gateway: True
+    vni: 1002
+    links: [L3-h2]
+
+validate:
+  ping:
+    description: Pinging host from hosts
+    nodes: [h1]
+    devices: [linux]
+    plugin: ping('h2')
+
+  lag_test:
+    description: Disable one of the links on L1
+    nodes: [L1]
+    config:
+      template: templates/int
+      variable.state: down
+
+  failover:
+    description: End-to-end connectivity after a LAG member failure
+    nodes: [h1]
+    wait_msg: Waiting for MLAG convergence
+    level: warning
+    wait: 5
+    plugin: ping('h2')
+
+  recover:
+    description: Re-enable the link on X1
+    nodes: [L1]
+    config:
+      template: templates/int
+      variable.state: up
+
+  lag_testl2:
+    description: Disable one of the links on L2
+    nodes: [L2]
+    config:
+      template: templates/int
+      variable.state: down
+
+  failoverl2:
+    description: End-to-end connectivity after a LAG member failure
+    nodes: [h1]
+    wait_msg: Waiting for MLAG convergence
+    level: warning
+    wait: 5
+    plugin: ping('h2')
+
+  recoverl2:
+    description: Re-enable the link on L2
+    nodes: [L2]
+    config:
+      template: templates/int
+      variable.state: up
