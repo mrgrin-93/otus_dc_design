@@ -62,6 +62,8 @@ links:
       members: [L1-h1, L2-h1]
 ```
 
+<figure><img src="../.gitbook/assets/swappy-20251012-152635.png" alt=""><figcaption></figcaption></figure>
+
 {% hint style="info" %}
 Тут в теплейтах нет keepalive настроек на уровне теплейтов в ансибле, хотя переменная для него есть. Попробую добавить и потестить.&#x20;
 {% endhint %}
