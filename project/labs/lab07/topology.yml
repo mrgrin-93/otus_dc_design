@@ -4,7 +4,7 @@ defaults:
   device: eos
   devices.eos.clab.image: ceos:4.34.2f
 
-plugin: [mlag.vtep, fabric]
+plugin: [evpn.multihoming, fabric] # Use EBGP multihop plugin to get loopback EBGP sessions
 
 bgp.as: 65000
 
@@ -26,12 +26,15 @@ nodes:
     device: linux
 
 links:
-  - lag:
-      members: [L1-L2]
-      mlag.peergroup: True
   - vlan.access: red1
     lag:
-      members: [L1-h1, L2-h1]
+      members:
+        - L1:
+            evpn.es: seg_1
+          h1:
+        - L2:
+            evpn.es: seg_1
+          h1:
 
 vrfs:
   red:
@@ -89,10 +92,13 @@ validate:
   failoverl2:
     description: End-to-end connectivity after a LAG member failure
     nodes: [h1]
+    devices: [linux]
     wait_msg: Waiting for MLAG convergence
     level: warning
     wait: 5
-    plugin: ping('h2')
+    exec: ping -c 10 h2 -A
+    valid: |
+      "64 bytes" in stdout
 
   recoverl2:
     description: Re-enable the link on L2
