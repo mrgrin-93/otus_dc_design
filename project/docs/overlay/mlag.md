@@ -23,7 +23,7 @@ fabric:
 
   leafs: 3
   leaf:
-    module: [vlan, vxlan, ospf, bgp, evpn, vrf, gateway, lag] # тут соразу добавим lag, для бондинга
+    module: [vlan, vxlan, ospf, bgp, evpn, vrf, gateway, lag] # тут сразу добавим lag, для бондинга
 
 nodes:
   h1:
@@ -65,7 +65,7 @@ links:
 <figure><img src="../.gitbook/assets/swappy-20251012-152635.png" alt=""><figcaption></figcaption></figure>
 
 {% hint style="info" %}
-Тут в теплейтах нет keepalive настроек на уровне теплейтов в ансибле, хотя переменная для него есть. Попробую добавить и потестить.&#x20;
+Тут в темплейтах нет keepalive настроек на уровне темплейтов в ансибле, хотя переменная для него есть. Попробую добавить и потестить.&#x20;
 {% endhint %}
 
 Вот собственно и всё. Только при запуске в интерфейсе vxlan 1 не поменялся сурс интерфейс.&#x20;
