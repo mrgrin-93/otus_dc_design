@@ -15,14 +15,15 @@ bgp.multihop.sessions: # Add loopback-to-loopback EBGP multihop sessions
   - L1-S1
   - L2-S1
   - L3-S1
-  # - L1-S2
-  # - L2-S2
-  # - L3-S2
+  - L1-S2
+  - L2-S2
+  - L3-S2
 
 fabric:
-  spines: 1
+  spines: 2
   spine:
     module: [bgp, evpn]
+    config: [template]
     bgp:
       as: 65100
       next_hop_self: false
@@ -30,6 +31,7 @@ fabric:
   leafs: 3
   leaf:
     module: [vlan, vxlan, bgp, evpn, vrf, gateway]
+    config: [template]
     bgp:
       as: "{65000 + count}"
       next_hop_self: false
@@ -115,15 +117,3 @@ validate:
         {% for n in bgp.neighbors %}
         result["vrfs"]["default"]["peers"]["{{ n.ipv4 }}"]["peerState"] == "Established"{% if not loop.last %} and {% endif %}
         {% endfor %}
-
-  disable_eth1:
-    description: Disable interface on L1
-    config:
-      template: template
-    nodes: [L1]
-    pass: int disabled
-
-  session2:
-    description: Check EBGP sessions with DUT
-    nodes: [L1, L2]
-    plugin: bgp_neighbor(node.bgp.neighbors,'S1')
